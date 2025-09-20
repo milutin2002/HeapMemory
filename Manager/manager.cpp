@@ -1,5 +1,6 @@
 #include "./manager.h"
 #include <cstddef>
+#include <iostream>
 #include <unistd.h>
 HeapManager::HeapManager(){
     this->head=this->tail=nullptr;
@@ -29,6 +30,19 @@ void * HeapManager::malloc(int size){
     }
     return split+1;
 }
+
+void HeapManager::displayState() {
+    if(head==nullptr) {
+        return;
+    }
+    HeapNode *curr=head;
+    while(curr->next) {
+        std::cout << curr->size<<" | "<<curr->free<<" -> ";
+        curr=curr->next;
+    }
+    std::cout << curr->size<<" | "<<curr->free<< std::endl;
+}
+
 void HeapManager::free(void *node){
     if(node>sbrk(0)){
         return;

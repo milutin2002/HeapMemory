@@ -11,5 +11,5 @@ public:
     HeapManager();
     void* malloc(int size);
     void free(void *node);
-    
+    void displayState();
 };
