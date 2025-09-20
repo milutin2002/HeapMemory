@@ -44,7 +44,7 @@ cmake --build .
 
 <h3>Run the demo</h3>
 <pre><code># After building:
-./HeapMemoryDemo            # name may differ based on your CMake target
+./App/exec
 </code></pre>
 
 <h2>🧭 Usage (example)</h2>
