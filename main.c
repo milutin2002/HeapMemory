@@ -2,6 +2,7 @@
 #include<memory.h>
 #include<unistd.h>
 #include<sys/mman.h>
+#include <stdint.h>
 
 static size_t system_page_size=0;
 
@@ -9,7 +10,7 @@ void mm_init(){
     system_page_size=getpagesize();
 }
 
-static void * mm_get_new_vm_from_kernel(int units){
+void * mm_get_new_vm_from_kernel(int units){
     char *a=mmap(0,units*system_page_size,PROT_READ|PROT_WRITE|PROT_EXEC,MAP_ANON | MAP_PRIVATE,0,0);
     if(a==MAP_FAILED){
         return NULL;
@@ -18,11 +19,24 @@ static void * mm_get_new_vm_from_kernel(int units){
     return a;
 }
 
-static void  mm_get_return_vm_to_kernel(void *a,int units){
+void  mm_get_return_vm_to_kernel(void *a,int units){
     if(munmap(a,units*system_page_size)){
         printf("Error with returning\n");
     }
 }
+
+typedef struct vm_family_t{
+    char name[32];
+    uint32_t size;
+}vm_family_t;
+
+typedef struct vm_families_t{
+    struct vm_families_t *next;
+    vm_family_t pages[0];
+}vm_families_t;
+
+#define NUM_FAMILIES \
+    (system_page_size - sizeof(vm_families_t))/sizeof(vm_family_t);
 
 int main(int argc,char *argv[]){
     mm_init();
