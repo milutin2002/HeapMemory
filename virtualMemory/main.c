@@ -38,6 +38,12 @@ typedef struct vm_families_t{
 #define NUM_FAMILIES \
     (system_page_size - sizeof(vm_families_t))/sizeof(vm_family_t);
 
+#define ITERATE_PAGE_FAMILY_BEGIN(ptr,curr) \
+    uint32_t count=0; \
+    for(curr=(vm_family_t*)ptr->pages[0];curr->size && count<NUM_FAMILIES;curr++,count++){ 
+
+#define ITERATE_PAGE_FAMILY_END(ptr,curr) }
+
 int main(int argc,char *argv[]){
     mm_init();
     printf("VM page size = %d\n",system_page_size);
