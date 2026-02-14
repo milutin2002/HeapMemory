@@ -6,7 +6,9 @@
 
 static size_t system_page_size=0;
 
+
 void mm_init(){
+
     system_page_size=getpagesize();
 }
 
@@ -35,14 +37,52 @@ typedef struct vm_families_t{
     vm_family_t pages[0];
 }vm_families_t;
 
+static vm_families_t* first;
+
 #define NUM_FAMILIES \
-    (system_page_size - sizeof(vm_families_t))/sizeof(vm_family_t);
+    (system_page_size - sizeof(vm_families_t))/sizeof(vm_family_t)
 
 #define ITERATE_PAGE_FAMILY_BEGIN(ptr,curr) \
-    uint32_t count=0; \
-    for(curr=(vm_family_t*)ptr->pages[0];curr->size && count<NUM_FAMILIES;curr++,count++){ 
+    for(curr=(vm_family_t*)&ptr->pages[0];curr->size && count<NUM_FAMILIES;curr++,count++){ 
 
-#define ITERATE_PAGE_FAMILY_END(ptr,curr) }
+#define ITERATE_PAGE_FAMILY_END }
+
+void mm_create_new_page(char * name,uint32_t size){
+    vm_family_t *family=NULL;
+    vm_families_t *families=NULL;
+    if(size>system_page_size){
+        printf("Structure size is bigger than system page size\n");
+        return;
+    }
+    if(!first){
+        first=mm_get_new_vm_from_kernel(1);
+        first->next=NULL;
+        strncpy(first->pages->name,name,strlen(name));
+        first->pages[0].size=size;
+        return;
+    }
+    uint32_t count=0;
+    ITERATE_PAGE_FAMILY_BEGIN(first,family)
+
+        if(strncmp(family->name,name,20)!=0){
+            count++;
+            continue;
+        }
+    ITERATE_PAGE_FAMILY_END
+    if(count==NUM_FAMILIES){
+        vm_families_t* new_family=mm_get_new_vm_from_kernel(1);
+        new_family->next=first;
+    }
+    else{
+        strncpy(family->name,name,20);
+        family->size=size;
+    }
+}
+
+
+typedef struct a{
+    int a,b;
+}a;
 
 int main(int argc,char *argv[]){
     mm_init();
@@ -50,5 +90,6 @@ int main(int argc,char *argv[]){
     void *a=mm_get_new_vm_from_kernel(4);
     void *b=mm_get_new_vm_from_kernel(3);
     printf("Addr1 %p Addr2 %p %d ",a,b,a-b);
+    mm_create_new_page("a",sizeof(a));
     return 0;
 }
