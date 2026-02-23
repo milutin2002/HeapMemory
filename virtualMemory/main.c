@@ -47,6 +47,25 @@ static vm_families_t* first;
 
 #define ITERATE_PAGE_FAMILY_END }
 
+typedef struct vm_meta_block_{
+    int32_t free;
+    struct vm_meta_block_ *prev,*next;
+    int32_t size;
+    int32_t offset;
+}vm_meta_block_t;
+
+#define GET_VIRTUAL_PAGE(meta_ptr) \
+    (char *)(meta_ptr-meta_ptr->offset)
+
+#define GET_NEXT_META_BLOCK(meta_ptr) \
+    meta_ptr->next
+
+#define GET_PREV_META_BLOCK(meta_ptr) \
+    meta_ptr->prev
+
+#define GET_NEXT_META_BLOCK_WITH_SIZE(meta_ptr) \
+    (vm_meta_block_t*)((char *)(meta_ptr+1)+meta_ptr->size)
+
 void mm_create_new_page(char * name,uint32_t size){
     vm_family_t *family=NULL;
     vm_families_t *families=NULL;
