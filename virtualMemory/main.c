@@ -97,7 +97,16 @@ void mm_create_new_page(char * name,uint32_t size){
         family->size=size;
     }
 }
-
+void merge(vm_meta_block_t *b1,vm_meta_block_t *b2){
+    if(!b1->free || !b2->free){
+        return;
+    }
+    b1->size+=sizeof(vm_meta_block_t)+b2->size;
+    b1->next=b1->next;
+    if(b2->next!=NULL){
+        b2->next->prev=b1;
+    }
+}
 
 typedef struct a{
     int a,b;
