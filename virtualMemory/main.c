@@ -27,13 +27,14 @@ void  mm_get_return_vm_to_kernel(void *a,int units){
     }
 }
 
-typedef struct vm_family_t{
+typedef struct vm_family_{
     char name[32];
     uint32_t size;
+    vm_page_t *page;
 }vm_family_t;
 
-typedef struct vm_families_t{
-    struct vm_families_t *next;
+typedef struct vm_families_{
+    struct vm_families_ *next;
     vm_family_t pages[0];
 }vm_families_t;
 
@@ -91,6 +92,7 @@ void mm_create_new_page(char * name,uint32_t size){
     if(count==NUM_FAMILIES){
         vm_families_t* new_family=mm_get_new_vm_from_kernel(1);
         new_family->next=first;
+        first=new_family;
     }
     else{
         strncpy(family->name,name,20);
@@ -107,6 +109,35 @@ void merge(vm_meta_block_t *b1,vm_meta_block_t *b2){
         b2->next->prev=b1;
     }
 }
+
+typedef struct vm_page_{
+    struct vm_page_ *next;
+    struct vm_page_ *prev;
+    struct vm_family_t *pg_family;
+    vm_meta_block_t block_data;
+    char memory[0];
+}vm_page_t;
+
+int virtual_page_is_empty(vm_page_t *page){
+    return page->block_data.next==NULL && page->block_data.prev==NULL && page->block_data.free;
+}
+
+void make_vm_empty(vm_page_t *page){
+    page->block_data.next=NULL;
+    page->block_data.prev=NULL;
+    page->block_data.free=1;
+}
+
+#define ITERATE_VM_PAGE_BEGIN(family,curr) \
+    for(curr=(vm_page_t*)family->page;curr!=NULL;curr=curr->next){
+
+#define ITERATE_VM_PAGE_END }
+
+#define ITERATE_BLOCK_ITERATE_BEGIN(page,curr) \ 
+    for(curr=(vm_page_t)&page->block_data;curr!=NULL;curr->next){
+
+#define ITERATE_BLOCK_ITERATE_END }
+
 
 typedef struct a{
     int a,b;
