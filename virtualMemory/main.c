@@ -166,6 +166,24 @@ vm_page_t *allocate_new_page(vm_family_t *family){
     return new_page;
 }
 
+void delete_page(vm_page_t *page){
+    vm_family_t *family=page->pg_family;
+    if(family->page==page){
+        family->page=family->page->next;
+        page->prev=NULL;
+        page->next=NULL;
+        mm_get_return_vm_to_kernel((void *)page,1);
+        return;
+    }
+    page->prev->next=page->next;
+    if(page->next!=NULL){
+        page->next->prev=page->prev;
+    }
+    page->next=NULL;
+    page->prev=NULL;
+    mm_get_return_vm_to_kernel((void *)page,1);
+}
+
 typedef struct a{
     int a,b;
 }a;
