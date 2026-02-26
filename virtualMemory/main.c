@@ -55,6 +55,9 @@ typedef struct vm_meta_block_{
     int32_t offset;
 }vm_meta_block_t;
 
+#define OFFSET_OFF(container,field) \
+    ((size_t)&(((container*)0)->field))
+
 #define GET_VIRTUAL_PAGE(meta_ptr) \
     (char *)(meta_ptr-meta_ptr->offset)
 
@@ -122,11 +125,14 @@ int virtual_page_is_empty(vm_page_t *page){
     return page->block_data.next==NULL && page->block_data.prev==NULL && page->block_data.free;
 }
 
-void make_vm_empty(vm_page_t *page){
+
+static void make_vm_empty(vm_page_t *page){
     page->block_data.next=NULL;
     page->block_data.prev=NULL;
     page->block_data.free=1;
 }
+
+
 
 #define ITERATE_VM_PAGE_BEGIN(family,curr) \
     for(curr=(vm_page_t*)family->page;curr!=NULL;curr=curr->next){
@@ -138,6 +144,27 @@ void make_vm_empty(vm_page_t *page){
 
 #define ITERATE_BLOCK_ITERATE_END }
 
+static int maxnumber_off_free_bytes(int units){
+    return units*system_page_size-OFFSET_OFF(vm_page_t,memory);
+}
+
+vm_page_t *allocate_new_page(vm_family_t *family){
+    vm_page_t* new_page=mm_get_new_vm_from_kernel(1);
+    make_vm_empty(new_page);
+    new_page->block_data.size=maxnumber_off_free_bytes(1);
+    new_page->block_data.offset=OFFSET_OFF(vm_page_t,block_data);
+    new_page->next=NULL;
+    new_page->prev=NULL;
+    new_page->pg_family=family;
+    if(family->page==NULL){
+        family->page=new_page;
+        return new_page;
+    }
+    family->page->prev=new_page;
+    new_page->next=family->page;
+    family->page=new_page;
+    return new_page;
+}
 
 typedef struct a{
     int a,b;
