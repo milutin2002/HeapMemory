@@ -57,6 +57,9 @@ programming and security research. Custom allocators will help me learn:
 - The OS mechanisms (sbrk, mmap) that underpin all dynamic
   memory in user space
 
+## Future plans
+
+I plan in future to finish vm version and to add version small buckets, large bucker in order to understand memory better in terms of security and to add intrusive lists to all projects
 
 ## Tech Stack
 
