@@ -50,12 +50,10 @@ virtual memory subsystem.
 ## Why This Project
 
 Understanding how allocators work is foundational to systems
-programming and security research. Custom allocators expose:
+programming and security research. Custom allocators will help me learn:
 
 - How heap vulnerabilities like heap overflows, use-after-free,
   and double-free bugs arise at the implementation level
-- How allocator metadata can be targeted and corrupted in
-  exploitation scenarios
 - The OS mechanisms (sbrk, mmap) that underpin all dynamic
   memory in user space
 
