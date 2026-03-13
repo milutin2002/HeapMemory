@@ -1,69 +1,128 @@
-# HeapMemory — Custom Heap Memory Allocator
+<h1>HeapMemory</h1>
 
-A low-level heap memory manager implemented in C/C++, exploring two
-distinct approaches to dynamic memory allocation from scratch —
-without relying on malloc or any standard allocator.
+<p>
+  Custom heap memory manager in modern C++ — a small, educational project that explores how allocators work under the hood (free lists, block splitting/merging, alignment, and allocation strategies).
+  <br>
+  <em>Built with CMake; C++ sources live in <code>App/</code> and <code>Manager/</code>.</em>
+</p>
 
-## Overview
+<hr>
 
-This project implements a custom heap allocator to deeply understand
-how memory management works at the OS boundary. Two allocator
-strategies are implemented, each with different trade-offs in
-complexity and control.
+<h2>🔥 Why</h2>
+<ul>
+  <li>Learn OS/internal concepts hands-on by implementing a heap on top of a raw buffer.</li>
+  <li>Experiment with allocation and deallocation behavior.</li>
+  <li>Provide a minimal, testable allocator you can instrument and benchmark.</li>
+</ul>
 
-## Implementations
+<h2>✨ Features</h2>
+<ul>
+  <li>Fixed-size heap backed by a contiguous buffer (no system <code>malloc</code> needed).</li>
+  <li>Simple <code>allocate(size, align)</code> / <code>deallocate(ptr)</code> API surface.</li>
+  <li>Block splitting when a request is smaller than a free block.</li>
+  <li>Optional block coalescing (merge adjacent free blocks).</li>
+  <li>Uses <strong>first-fit allocation strategy</strong> (scans from the beginning of the free list and picks the first suitable block).</li>
+</ul>
 
-### 1. sbrk/brk Allocator (`/Sbrk`) — ✅ Complete
+<h2>📦 Project layout</h2>
+<pre><code>HeapMemory/
+├─ App/          # small demo / CLI usage examples
+├─ Manager/      # heap manager sources (allocator, block metadata, etc.)
+├─ Pictures/     # diagrams &amp; notes
+├─ CMakeLists.txt
+└─ README.md
+</code></pre>
 
-A fully functional heap allocator using the `sbrk` syscall to grow
-the process data segment on demand.
+<h2>🚀 Quickstart</h2>
 
-**How it works:**
-- Maintains a free list of memory blocks using a linked list structure
-- Implements first-fit allocation strategy
-- Coalesces adjacent free blocks to reduce fragmentation
-- Uses `sbrk()` to request additional memory from the OS when no
-  suitable free block exists
-- Implements `malloc`, `free`, and `realloc` equivalents
+<h3>Build</h3>
+<pre><code># from repository root
+cd Sbrk
+mkdir -p build &amp;&amp; cd build
+cmake ..
+cmake --build .
+</code></pre>
 
-**Key concepts demonstrated:**
-- Process memory layout (heap segment)
-- Free list management and block metadata
-- Internal and external fragmentation handling
-- Memory alignment
+<h3>Run the demo</h3>
+<pre><code># After building:
+./App/exec
+</code></pre>
 
-### 2. Virtual Memory Page Allocator (`/virtualMemory`) — 🔬 In Progress
+<h2>🧭 Usage (example)</h2>
+<pre><code class="language-cpp">#include &lt;cstddef&gt;
+#include <cstdlib>
+#include <iostream>
+#include "../Manager/manager.h"
+using namespace std;
 
-An exploration of lower-level memory management using `mmap` to
-allocate memory directly at the virtual memory page level.
+int main(int argc,char *argv[]){
+    HeapManager m;
+    int *a=(int*)m.malloc(4*sizeof(int));
+    m.displayState();
+    int *b=(int*)m.malloc(6*sizeof(int));
+    m.displayState();
+    m.free(a);
+    m.displayState();
+    m.free(b);
+    m.displayState();
+    void *c=m.malloc(5);
+    m.displayState();
+    void *d =m.malloc(6);
+    m.displayState();
+    m.free(d);
+    m.displayState();
+    void * f=m.malloc(3);
+    m.displayState();
+    void *x=m.malloc(100);
+    m.displayState();
+    m.free(c);
+    m.displayState();
+    m.free(f);
+    m.displayState();
+    void *g=m.malloc(1000);
+    m.displayState();
+    m.free(g);
+    m.displayState();
+    void *z =m.malloc(160);
+    m.displayState();
+    void *y=m.malloc(240);
+    m.displayState();
+    m.free(z);
+    m.displayState();
+    m.free(x);
+    m.displayState();
+    m.free(y);
+    m.displayState();
+    return 0;
+}
+</code></pre>
 
-**Goal:** Manage memory at page granularity, bypassing the
-traditional heap entirely and interacting directly with the OS
-virtual memory subsystem.
+<h2>🖼️ Diagrams &amp; Visuals</h2>
+<p>The following examples show how the heap manager allocates and frees memory:</p>
 
-**Concepts being explored:**
-- `mmap`/`munmap` for anonymous memory mapping
-- Page-aligned allocation
-- Virtual memory layout and address space management
-- Build specific structure for every type that is registered
+<p>
+  <img src="Pictures/heap1.png" alt="Heap Allocation Example" style="max-width:100%;height:auto;">
+  <br>
+  <em>Example sequence of allocations and frees using <code>HeapManager</code>, showing calls to <code>malloc</code>, <code>free</code>, and <code>displayState</code>.</em>
+</p>
 
-## Why This Project
+<p>
+  <img src="Pictures/heap2.png" alt="Heap State Output" style="max-width:100%;height:auto;">
+  <br>
+  <em>Console output of <code>displayState</code>, showing the state of the free list, block sizes, and fragmentation after each operation.</em>
+</p>
 
-Understanding how allocators work is foundational to systems
-programming and security research. Custom allocators will help me learn:
+<h2>🗺️ Roadmap</h2>
+<ul>
+  <li>[ ] Add benchmark suite</li>
+  <li>[ ] (Future) Add more allocation strategies (best-fit, next-fit) for comparison</li>
+</ul>
 
-- How heap vulnerabilities like heap overflows, use-after-free,
-  and double-free bugs arise at the implementation level
-- The OS mechanisms (sbrk, mmap) that underpin all dynamic
-  memory in user space
+<h2>📚 Learn more</h2>
+<p>This repo is mostly <strong>C++</strong> with some <strong>CMake</strong> for building.</p>
 
-## Future plans
+<h2>🤝 Contributing</h2>
+<p>PRs and issues are welcome — small improvements (docs, tests, diagrams) are great starts.</p>
 
-I plan in future to finish vm version and to add version small buckets, large bucker in order to understand memory better in terms of security and to add intrusive lists to all projects
-
-## Tech Stack
-
-- C / C++
-- CMake
-- Linux system calls (sbrk, mmap)
-- Linked list block management
+<h2>🧾 License</h2>
+<p>Choose one (MIT/Apache-2.0) and add a <code>LICENSE</code> file. If you already have a license, reference it here.</p>
