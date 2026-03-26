@@ -12,7 +12,7 @@
 <ul>
   <li>Learn OS/internal concepts hands-on by implementing a heap on top of a raw buffer.</li>
   <li>Experiment with allocation and deallocation behavior.</li>
-  <li>Provide a minimal, testable allocator you can instrument and benchmark.</li>
+  <li>Provide a minimal, testable allocator you can instrument</li>
 </ul>
 
 <h2>✨ Features</h2>
