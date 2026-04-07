@@ -37,7 +37,6 @@
 
 <h3>Build</h3>
 <pre><code># from repository root
-cd Sbrk
 mkdir -p build &amp;&amp; cd build
 cmake ..
 cmake --build .
