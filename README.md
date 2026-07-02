@@ -100,6 +100,12 @@ int main(int argc,char *argv[]){
 <p>The following examples show how the heap manager allocates and frees memory:</p>
 
 <p>
+  <img src="Pictures/brk_sbrk_layout.png" alt="Process memory layout showing text, data, bss, heap, and stack segments before and after a sbrk call" style="max-width:100%;height:auto;">
+  <br>
+  <em>Process address space before and after <code>sbrk(increment)</code>. The heap sits between the <code>bss</code> segment and the stack; <code>brk</code>/<code>sbrk</code> move the <strong>program break</strong> upward to hand the heap more memory from the OS, while the stack grows downward from the top of the address space. This <code>HeapManager</code> requests one such region up front and then serves allocations from it itself.</em>
+</p>
+
+<p>
   <img src="Pictures/heap1.png" alt="Heap Allocation Example" style="max-width:100%;height:auto;">
   <br>
   <em>Example sequence of allocations and frees using <code>HeapManager</code>, showing calls to <code>malloc</code>, <code>free</code>, and <code>displayState</code>.</em>

@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="760" viewBox="0 0 980 760" font-family="Menlo, Consolas, monospace">
+<defs>
+  <pattern id="hatchOrange" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="8" height="8" fill="#fddcb0"/>
+    <line x1="0" y1="0" x2="0" y2="8" stroke="#c9701f" stroke-width="3"/>
+  </pattern>
+  <pattern id="hatchGray" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="8" height="8" fill="#f4f4f5"/>
+    <line x1="0" y1="0" x2="0" y2="8" stroke="#c7c9ce" stroke-width="2"/>
+  </pattern>
+  <marker id="arrowRight" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+    <polygon points="0,0 10,5 0,10" fill="#1f2430"/>
+  </marker>
+  <marker id="arrowUp" markerWidth="10" markerHeight="10" refX="5" refY="1" orient="auto">
+    <polygon points="0,10 5,0 10,10" fill="#1f2430"/>
+  </marker>
+  <marker id="arrowDown" markerWidth="10" markerHeight="10" refX="5" refY="9" orient="auto">
+    <polygon points="0,0 10,0 5,10" fill="#1f2430"/>
+  </marker>
+</defs>
+
+<rect x="0" y="0" width="980" height="760" fill="#ffffff"/>
+
+<text x="24" y="28" font-size="20" font-weight="bold" fill="#1f2430">Process address space &#8212; what brk/sbrk do to the memory layout</text>
+<text x="24" y="48" font-size="12.5" fill="#3a3f4b">Same address space, two snapshots: the heap grows upward from the <tspan font-weight="bold">program break</tspan>; the stack grows downward from the top.</text>
+
+<!-- legend row 1 -->
+<rect x="24" y="66" width="16" height="16" fill="#6b9bd1" stroke="#3f6ea6"/>
+<text x="46" y="79" font-size="12" fill="#1f2430">text (code)</text>
+<rect x="150" y="66" width="16" height="16" fill="#9fd8cb" stroke="#3f8f7a"/>
+<text x="172" y="79" font-size="12" fill="#1f2430">data (initialized)</text>
+<rect x="320" y="66" width="16" height="16" fill="#cbd8f0" stroke="#7fa0d9"/>
+<text x="342" y="79" font-size="12" fill="#1f2430">bss (zero-init)</text>
+<rect x="480" y="66" width="16" height="16" fill="#e8798f" stroke="#b5455c"/>
+<text x="502" y="79" font-size="12" fill="#1f2430">stack</text>
+<!-- legend row 2 -->
+<rect x="24" y="88" width="16" height="16" fill="#f4a261" stroke="#c9701f"/>
+<text x="46" y="101" font-size="12" fill="#1f2430">heap (existing)</text>
+<rect x="180" y="88" width="16" height="16" fill="url(#hatchOrange)" stroke="#c9701f"/>
+<text x="202" y="101" font-size="12" fill="#1f2430">heap growth (new, via sbrk)</text>
+<rect x="420" y="88" width="16" height="16" fill="url(#hatchGray)" stroke="#c7c9ce"/>
+<text x="442" y="101" font-size="12" fill="#1f2430">unmapped / unused</text>
+
+<!-- ===================== PANEL 1: BEFORE ===================== -->
+<text x="230" y="114" font-size="14" font-weight="bold" text-anchor="middle" fill="#1f2430">Before &#8212; sbrk(0)</text>
+<text x="230" y="129" font-size="11.5" text-anchor="middle" fill="#7a5cff">void* brk = sbrk(0);  // just reads the current break</text>
+
+<!-- address axis -->
+<line x1="95" y1="660" x2="95" y2="145" stroke="#3a3f4b" stroke-width="1.5" marker-end="url(#arrowUp)"/>
+<text x="95" y="675" font-size="10.5" text-anchor="middle" fill="#3a3f4b">low</text>
+<text x="95" y="167" font-size="10.5" text-anchor="middle" fill="#3a3f4b">high</text>
+
+<!-- stack -->
+<rect x="110" y="140" width="240" height="100" fill="#e8798f" stroke="#b5455c" stroke-width="1.5"/>
+<text x="230" y="180" font-size="13" font-weight="bold" text-anchor="middle" fill="#1f2430">stack</text>
+<line x1="180" y1="150" x2="180" y2="230" stroke="#1f2430" stroke-width="1.5" marker-end="url(#arrowDown)"/>
+<text x="230" y="197" font-size="10.5" text-anchor="middle" fill="#1f2430">grows &#8595;</text>
+
+<!-- gap / unmapped -->
+<rect x="110" y="240" width="240" height="250" fill="url(#hatchGray)" stroke="#c7c9ce" stroke-width="1.5" stroke-dasharray="4,3"/>
+<text x="230" y="368" font-size="12" text-anchor="middle" fill="#6b6f78">unmapped / unused</text>
+
+<!-- heap -->
+<rect x="110" y="490" width="240" height="50" fill="#f4a261" stroke="#c9701f" stroke-width="1.5"/>
+<text x="230" y="519" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#1f2430">heap</text>
+<line x1="330" y1="535" x2="330" y2="495" stroke="#1f2430" stroke-width="1.5" marker-end="url(#arrowUp)"/>
+
+<!-- bss -->
+<rect x="110" y="540" width="240" height="40" fill="#cbd8f0" stroke="#7fa0d9" stroke-width="1.5"/>
+<text x="230" y="564" font-size="12" text-anchor="middle" fill="#1f2430">bss</text>
+
+<!-- data -->
+<rect x="110" y="580" width="240" height="40" fill="#9fd8cb" stroke="#3f8f7a" stroke-width="1.5"/>
+<text x="230" y="604" font-size="12" text-anchor="middle" fill="#1f2430">data</text>
+
+<!-- text -->
+<rect x="110" y="620" width="240" height="40" fill="#6b9bd1" stroke="#3f6ea6" stroke-width="1.5"/>
+<text x="230" y="644" font-size="12" text-anchor="middle" fill="#ffffff">text (code)</text>
+
+<!-- program break line (col 1) -->
+<line x1="350" y1="490" x2="382" y2="490" stroke="#1f2430" stroke-width="1.5" stroke-dasharray="5,3"/>
+<polygon points="382,486 392,490 382,494" fill="#1f2430"/>
+<text x="396" y="494" font-size="11.5" font-weight="bold" fill="#1f2430">brk</text>
+
+<!-- ===================== ARROW BETWEEN PANELS ===================== -->
+<line x1="360" y1="390" x2="580" y2="390" stroke="#1f2430" stroke-width="2" marker-end="url(#arrowRight)"/>
+<text x="470" y="378" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#7a5cff">sbrk(increment)</text>
+<text x="470" y="408" font-size="10.5" text-anchor="middle" fill="#3a3f4b">kernel maps more pages;</text>
+<text x="470" y="421" font-size="10.5" text-anchor="middle" fill="#3a3f4b">program break moves up</text>
+
+<!-- ===================== PANEL 2: AFTER ===================== -->
+<text x="710" y="114" font-size="14" font-weight="bold" text-anchor="middle" fill="#1f2430">After &#8212; sbrk(increment)</text>
+<text x="710" y="129" font-size="11.5" text-anchor="middle" fill="#7a5cff">sbrk(increment);  // extends the heap upward</text>
+
+<!-- stack -->
+<rect x="590" y="140" width="240" height="100" fill="#e8798f" stroke="#b5455c" stroke-width="1.5"/>
+<text x="710" y="180" font-size="13" font-weight="bold" text-anchor="middle" fill="#1f2430">stack</text>
+<line x1="660" y1="150" x2="660" y2="230" stroke="#1f2430" stroke-width="1.5" marker-end="url(#arrowDown)"/>
+<text x="710" y="197" font-size="10.5" text-anchor="middle" fill="#1f2430">grows &#8595;</text>
+
+<!-- gap / unmapped (shrunk) -->
+<rect x="590" y="240" width="240" height="160" fill="url(#hatchGray)" stroke="#c7c9ce" stroke-width="1.5" stroke-dasharray="4,3"/>
+<text x="710" y="323" font-size="12" text-anchor="middle" fill="#6b6f78">unmapped / unused</text>
+
+<!-- heap growth (new) -->
+<rect x="590" y="400" width="240" height="90" fill="url(#hatchOrange)" stroke="#c9701f" stroke-width="1.5"/>
+<text x="710" y="440" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f2430">new (via sbrk)</text>
+
+<!-- heap (existing) -->
+<rect x="590" y="490" width="240" height="50" fill="#f4a261" stroke="#c9701f" stroke-width="1.5"/>
+<text x="710" y="519" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#1f2430">heap</text>
+<line x1="810" y1="535" x2="810" y2="405" stroke="#1f2430" stroke-width="1.5" marker-end="url(#arrowUp)"/>
+
+<!-- bss -->
+<rect x="590" y="540" width="240" height="40" fill="#cbd8f0" stroke="#7fa0d9" stroke-width="1.5"/>
+<text x="710" y="564" font-size="12" text-anchor="middle" fill="#1f2430">bss</text>
+
+<!-- data -->
+<rect x="590" y="580" width="240" height="40" fill="#9fd8cb" stroke="#3f8f7a" stroke-width="1.5"/>
+<text x="710" y="604" font-size="12" text-anchor="middle" fill="#1f2430">data</text>
+
+<!-- text -->
+<rect x="590" y="620" width="240" height="40" fill="#6b9bd1" stroke="#3f6ea6" stroke-width="1.5"/>
+<text x="710" y="644" font-size="12" text-anchor="middle" fill="#ffffff">text (code)</text>
+
+<!-- old brk (faint) -->
+<line x1="830" y1="490" x2="862" y2="490" stroke="#8a8f99" stroke-width="1.5" stroke-dasharray="3,3"/>
+<text x="866" y="494" font-size="10.5" fill="#8a8f99">previous brk</text>
+
+<!-- new brk -->
+<line x1="830" y1="400" x2="862" y2="400" stroke="#1f2430" stroke-width="1.5" stroke-dasharray="5,3"/>
+<polygon points="862,396 872,400 862,404" fill="#1f2430"/>
+<text x="876" y="404" font-size="11.5" font-weight="bold" fill="#1f2430">brk</text>
+
+<!-- increment bracket -->
+<path d="M 848 400 L 856 400 L 856 490 L 848 490" fill="none" stroke="#c9701f" stroke-width="1.5"/>
+<text x="880" y="449" font-size="10.5" fill="#c9701f">&#916; increment</text>
+
+<!-- footnote -->
+<text x="24" y="712" font-size="11.5" fill="#3a3f4b"><tspan font-weight="bold">brk(addr)</tspan> sets the program break to an absolute address; <tspan font-weight="bold">sbrk(increment)</tspan> moves it by a relative amount and returns the previous break.</text>
+<text x="24" y="730" font-size="11.5" fill="#3a3f4b">A malloc implementation (like this one) typically calls sbrk() once for a large chunk, then serves many small allocations from that region without asking the OS again.</text>
+</svg>
