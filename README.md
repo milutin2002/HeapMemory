@@ -111,6 +111,12 @@ int main(int argc,char *argv[]){
   <em>Console output of <code>displayState</code>, showing the state of the free list, block sizes, and fragmentation after each operation.</em>
 </p>
 
+<p>
+  <img src="Pictures/block_states.png" alt="HeapNode block list state after each line of App/main.cpp" style="max-width:100%;height:auto;">
+  <br>
+  <em>The <code>HeapNode</code> linked list, block by block, after every <code>displayState()</code> call in <code>App/main.cpp</code>. Each box is one node: the dark strip is the 32-byte header (<code>size</code>/<code>prev</code>/<code>next</code>/<code>free</code>), the coloured strip is the data region labelled with its byte size — orange for allocated (<code>free=0</code>), green for free (<code>free=1</code>). It traces the whole story: the initial allocations, a block getting split by <code>malloc</code>, adjacent free blocks getting coalesced by <code>free</code>, and the heap finally merging back into a single free block.</em>
+</p>
+
 <h2>🗺️ Roadmap</h2>
 <ul>
   <li>[ ] Add benchmark suite</li>
